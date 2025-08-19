@@ -17,7 +17,8 @@ jobs:
       - name: Install Flutter 3.35.1 manually
         run: |
           git clone https://github.com/flutter/flutter.git --branch 3.35.1 --depth 1
-          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+          echo "${{ github.workspace }}/flutter/bin" >> $GITHUB_PATH
+          export PATH="${{ github.workspace }}/flutter/bin:$PATH"
           flutter --version
 
       - name: Install dependencies
