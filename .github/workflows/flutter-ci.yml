@@ -1,4 +1,4 @@
-name: Flutter CI
+﻿name: Flutter CI
 
 on:
   push:
@@ -16,12 +16,21 @@ jobs:
 
       # Cache Flutter SDK
       - name: Cache Flutter
+        id: flutter-cache
         uses: actions/cache@v3
         with:
           path: flutter
           key: ${{ runner.os }}-flutter-3.35.1
           restore-keys: |
             ${{ runner.os }}-flutter-
+
+      - name: Flutter cache status
+        run: |
+          if [ "${{ steps.flutter-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ **Flutter cache restored**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Flutter cache not found — downloading SDK**" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Install Flutter 3.35.1 manually
         run: |
@@ -34,6 +43,7 @@ jobs:
 
       # Cache Dart pub packages
       - name: Cache Pub
+        id: pub-cache
         uses: actions/cache@v3
         with:
           path: |
@@ -42,6 +52,14 @@ jobs:
           key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-pub-
+
+      - name: Pub cache status
+        run: |
+          if [ "${{ steps.pub-cache.outputs.cache-hit }}" == "true" ]; then
+            echo "✅ **Pub dependencies cache restored**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Pub cache not found — running fresh pub get**" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Install dependencies
         run: flutter pub get
