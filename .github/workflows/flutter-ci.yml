@@ -1,4 +1,4 @@
-name: Flutter CI
+ame: Flutter CI
 
 on:
   push:
@@ -14,12 +14,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Cache Flutter SDK
+      - name: Cache Flutter
+        uses: actions/cache@v3
+        with:
+          path: flutter
+          key: ${{ runner.os }}-flutter-3.35.1
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
       - name: Install Flutter 3.35.1 manually
         run: |
-          git clone https://github.com/flutter/flutter.git --branch 3.35.1 --depth 1
+          if [ ! -d "flutter" ]; then
+            git clone https://github.com/flutter/flutter.git --branch 3.35.1 --depth 1
+          fi
           echo "${{ github.workspace }}/flutter/bin" >> $GITHUB_PATH
           export PATH="${{ github.workspace }}/flutter/bin:$PATH"
           flutter --version
+
+      # Cache Dart pub packages
+      - name: Cache Pub
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
 
       - name: Install dependencies
         run: flutter pub get
