@@ -1,3 +1,4 @@
+![Flutter CI](https://github.com/DilipSitaram/apcost/actions/workflows/flutter-ci.yml/badge.svg)
 # apcost
 
 A new Flutter project.
